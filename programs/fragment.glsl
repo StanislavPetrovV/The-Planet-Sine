@@ -37,8 +37,8 @@ float fbm(vec2 p) {
 
 
 float getWater(vec3 p) {
-    float d = p.y + 5.0 * sin(u_time) + 80.0;
-    d += 6.0 * noise(p.xz * 0.02 + 1.0 * u_time);
+    float d = p.y + 0.5 * sin(u_time) + 80.0;
+    d += noise(p.xz * 0.02 + u_time);
     return d;
 }
 
@@ -57,7 +57,7 @@ float getTerrain(vec3 p) {
 float map(vec3 p) {
     float d = 0.0;
     d += getTerrain(p);
-    return min(d, getWater(p) + d);
+    return min(d, getWater(p) + d/8);
 }
 
 
@@ -112,7 +112,7 @@ float getSoftShadow(vec3 p, vec3 lightPos) {
 vec3 lightPos = vec3(250.0, 100.0, -300.0) * 4.0;
 
 vec3 getLight(vec3 p, vec3 rd) {
-    vec3 color =vec3(1);
+    vec3 color = vec3(1.0, 0.4, 0.4);
     vec3 l = normalize(lightPos - p);
     vec3 normal = getNormal(p);
     vec3 v = -rd;
@@ -139,7 +139,7 @@ mat3 getCam(vec3 ro, vec3 lookAt) {
 vec3 getSky(vec3 p, vec3 rd) {
     vec3 col = vec3(0.0);
     float sun = 0.01 / (1.0 - dot(rd, normalize(lightPos)));
-    col = mix(col, vec3(0.3), 2.0 * fbm(vec2(20.5 * length(rd.xz), rd.y)));
+    col = mix(col, vec3(0.3, 0.125, 0.0), 2.0 * fbm(vec2(20.5 * length(rd.xz), rd.y)));
     col += sun * 0.1;
     return col;
 }
@@ -174,17 +174,3 @@ void main() {
 
     fragColor = vec4(pow(color, vec3(1.5)), 1.0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
